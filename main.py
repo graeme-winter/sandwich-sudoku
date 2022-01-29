@@ -2,18 +2,20 @@ import pickle
 import random
 from PIL import Image, ImageDraw, ImageFont
 
-games = pickle.load(open("packed_games.pkl", "rb"))
-mx = len(games)
-index = random.randrange(0, mx)
+with open("packed_games.pkl", "rb") as f:
+    games = pickle.load(f)
+
+game = random.choice(games)
 
 grid = []
 counter = 0
 x = 0
+
 # load in game data from a random string in games
 for i in range(9):
     row = []
     for j in range(9):
-        row.append(int(games[index][counter]))
+        row.append(int(game[counter]))
         counter += 1
     grid.append(row)
 
@@ -162,5 +164,4 @@ for i in range(9):
 
 
 sol.save("solution.png", "PNG")
-puz.show()
 puz.save("puzzle.png", "PNG")
