@@ -3,24 +3,10 @@ import random
 from PIL import Image, ImageDraw, ImageFont
 
 with open("packed_games.pkl", "rb") as f:
-    games = pickle.load(f)
+    game = list(map(int, random.choice(pickle.load(f))))
 
-game = random.choice(games)
+grid = [game[9 * j : 9 * (j + 1)] for j in range(9)]
 
-grid = []
-counter = 0
-x = 0
-
-# load in game data from a random string in games
-for i in range(9):
-    row = []
-    for j in range(9):
-        row.append(int(game[counter]))
-        counter += 1
-    grid.append(row)
-
-
-# calculate and store row sums
 row_sums = []
 for row in grid:
     one = row.index(1)
