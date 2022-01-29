@@ -2,53 +2,48 @@ import pickle
 import random
 from PIL import Image, ImageDraw, ImageFont
 
-with open("packed_games.pkl", "rb") as f:
-    game = list(map(int, random.choice(pickle.load(f))))
 
-grid = [game[9 * j : 9 * (j + 1)] for j in range(9)]
+def generate():
+    with open("packed_games.pkl", "rb") as f:
+        game = list(map(int, random.choice(pickle.load(f))))
 
-row_sums = []
-for row in grid:
-    one = row.index(1)
-    nine = row.index(9)
-    if abs(one - nine) == 1:
-        row_sums.append(0)
-    elif one > nine:
-        sm = 0
-        for i in range(nine + 1, one):
-            sm += row[i]
-        row_sums.append(sm)
-    else:
-        sm = 0
-        for i in range(one + 1, nine):
-            sm += row[i]
-        row_sums.append(sm)
+    grid = [game[9 * j : 9 * (j + 1)] for j in range(9)]
+
+    row_sums = []
+    for row in grid:
+        one = row.index(1)
+        nine = row.index(9)
+        if abs(one - nine) == 1:
+            s = 0
+        elif one > nine:
+            s = sum(row[nine + 1 : one])
+        else:
+            s = sum(row[one + 1 : nine])
+        row_sums.append(s)
+
+    cols = []
+    for j in range(9):
+        col = []
+        for i in range(9):
+            col.append(grid[i][j])
+        cols.append(col)
+
+    col_sums = []
+    for col in cols:
+        one = col.index(1)
+        nine = col.index(9)
+        if abs(one - nine) == 1:
+            s = 0
+        elif one > nine:
+            s = sum(col[nine + 1 : one])
+        else:
+            s = sum(col[one + 1 : nine])
+        col_sums.append(s)
+
+    return grid, row_sums, col_sums
 
 
-# calculate and store column sums
-cols = []
-for j in range(9):
-    col = []
-    for i in range(9):
-        col.append(grid[i][j])
-    cols.append(col)
-
-col_sums = []
-for col in cols:
-    one = col.index(1)
-    nine = col.index(9)
-    if abs(one - nine) == 1:
-        col_sums.append(0)
-    elif one > nine:
-        sm = 0
-        for i in range(nine + 1, one):
-            sm += col[i]
-        col_sums.append(sm)
-    else:
-        sm = 0
-        for i in range(one + 1, nine):
-            sm += col[i]
-        col_sums.append(sm)
+grid, row_sums, col_sums = generate()
 
 sol = Image.new("RGB", (1200, 1200), color="white")
 s_draw = ImageDraw.Draw(sol)
@@ -60,6 +55,7 @@ s_draw.rectangle([(0, 0), (1200, 1200)], outline="black", width=10)
 fnt = ImageFont.truetype("Arial Unicode.ttf", 60)
 
 # generate starting squares
+
 xy = []
 while len(xy) < 10:
     t = (random.randrange(9), random.randrange(9))
